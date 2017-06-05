@@ -36,7 +36,8 @@ public class ScannerTest {
 		}  
 
 		System.out.println(m+"个数的和为"+sum);  
-		System.out.println(m+"个数的平均值是"+(sum/m));  
+		System.out.println(m+"个数的平均值是"+(sum/m)); 
+		scan.close();
 	}  
 	
 }
