@@ -15,37 +15,39 @@ import org.xml.sax.helpers.*;
  */
 public class SAXTest
 {
-   public static void main(String[] args) throws Exception
-   {
-      String url;
-      if (args.length == 0)
-      {
-         url = "http://www.w3c.org";
-         System.out.println("Using " + url);
-      }
-      else url = args[0];
+	public static void main(String[] args) throws Exception
+	{
+		String url;
+		if (args.length == 0)
+		{
+			url = "http://www.w3c.org";
+			System.out.println("Using " + url);
+		}
+		else url = args[0];
 
-      DefaultHandler handler = new DefaultHandler()
-         {
-            public void startElement(String namespaceURI, String lname, String qname,
-                  Attributes attrs)
-            {
-               if (lname.equals("a") && attrs != null)
-               {
-                  for (int i = 0; i < attrs.getLength(); i++)
-                  {
-                     String aname = attrs.getLocalName(i);
-                     if (aname.equals("href")) System.out.println(attrs.getValue(i));
-                  }
-               }
-            }
-         };
+		//覆盖DefaultHandler的startElement方法，识别输入流中带有herf属性的a元素
+		DefaultHandler handler = new DefaultHandler()
+		{
+			public void startElement(String namespaceURI, String lname, String qname, Attributes attrs)
+			{
+				if (lname.equals("a") && attrs != null)
+				{
+					for (int i = 0; i < attrs.getLength(); i++)
+					{
+						String aname = attrs.getLocalName(i);
+						if (aname.equals("href")) System.out.println(attrs.getValue(i));
+					}
+				}
+			}
+		};
 
-      SAXParserFactory factory = SAXParserFactory.newInstance();
-      factory.setNamespaceAware(true);
-      factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-      SAXParser saxParser = factory.newSAXParser();
-      InputStream in = new URL(url).openStream();
-      saxParser.parse(in, handler);
-   }
+//		获得一个SAXParser，设置相关属性
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		factory.setNamespaceAware(true);
+		factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+		SAXParser saxParser = factory.newSAXParser();
+		InputStream in = new URL(url).openStream();
+//		使用URL输入流和自定义的handler进行解析
+		saxParser.parse(in, handler);
+	}
 }

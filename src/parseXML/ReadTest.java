@@ -18,8 +18,8 @@ public class ReadTest {
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		
 //		String filePath = "src\\parseXML\\fontdialog.xml";
-//		String filePath = "src\\parseXML\\dom\\server.xml";
-		String filePath = "src\\parseXML\\xpath\\fontdialog.xml";
+		String filePath = "src\\parseXML\\dom\\server.xml";
+//		String filePath = "src\\parseXML\\xpath\\fontdialog.xml";
 		
 		File xmlSample = new File(filePath);
 		Document doc = builder.parse(xmlSample);
@@ -29,10 +29,14 @@ public class ReadTest {
 		ReadTest readTest = new ReadTest();
 		readTest.getChildrenInfo(root);
 		
+		//XPath Demo
 		System.out.println("------------------------------------------------------------------");
 		XPathFactory xpfactory = XPathFactory.newInstance();
 		XPath path = xpfactory.newXPath();
-		System.out.println(path.evaluate("gridbag/row/cell/bean/class", doc));
+		String xpFilePath = "src\\parseXML\\fontdialog.xml";
+		File xpSample = new File(xpFilePath);
+		Document xDoc = builder.parse(xpSample);
+		System.out.println(path.evaluate("gridbag/row/cell/bean/class", xDoc));
 		
 	}
 	
@@ -40,33 +44,48 @@ public class ReadTest {
 		putIndent();
 		//标签名
 		System.out.print("<" + parent.getTagName());
+		//标签属性
 		NamedNodeMap attributes = parent.getAttributes();
 		for (int i = 0; i < attributes.getLength(); i++) {
 			Node attribute = attributes.item(i);
 			//属性名及属性值
 			System.out.print(" " + attribute.getNodeName() + "=\"" + attribute.getNodeValue() + "\"");
 		}
-		System.out.print(">\n");
+		if (parent.hasChildNodes())
+			//标签内有其他元素，非自结束标签
+			System.out.print(">\n");
+		else
+			//标签内没有其他元素，自结束标签
+			System.out.print("/>\n");
+		
 		
 		if(parent.hasChildNodes()) {
 			NodeList childrens = parent.getChildNodes();
 			for(int i = 0; i < childrens.getLength(); i++) {
 				Node child = childrens.item(i);
+				//该子元素类型为Element，可能包含其他子元素，递归遍历
 				if(child instanceof Element) {
 					Element childElement = (Element) child;
 					indent++;
 					getChildrenInfo(childElement);
-				} else if(!((Text) child).getData().contains("\n")){
+				}
+				//该子元素类型为Text，且不是换行符
+				else if(child instanceof Text && !((Text) child).getData().contains("\n")) {
 					putIndent();
-					//标签内容
 					System.out.println(((Text) child).getData().trim());
+				}
+				//该子元素类型为Comment
+				else if (child instanceof Comment) {
+					putIndent();
+					System.out.println("<!-- " + ((Comment) child).getData().trim() + " -->");
 				}
 			}
 		}
-		
-		
-		putIndent();
-		System.out.println("</" + parent.getTagName() + ">");
+		//非自结束标签，打印结束标签
+		if (parent.hasChildNodes()) {
+			putIndent();
+			System.out.println("</" + parent.getTagName() + ">");
+		}
 		indent--;
 		
 	}
