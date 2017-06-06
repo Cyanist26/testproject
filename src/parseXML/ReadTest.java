@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.xml.parsers.*;
+import javax.xml.xpath.*;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -12,7 +13,7 @@ public class ReadTest {
 	
 	private int indent = 0;
 
-	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException {
+	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = factory.newDocumentBuilder();
 		
@@ -27,6 +28,11 @@ public class ReadTest {
 		
 		ReadTest readTest = new ReadTest();
 		readTest.getChildrenInfo(root);
+		
+		System.out.println("------------------------------------------------------------------");
+		XPathFactory xpfactory = XPathFactory.newInstance();
+		XPath path = xpfactory.newXPath();
+		System.out.println(path.evaluate("gridbag/row/cell/bean/class", doc));
 		
 	}
 	
